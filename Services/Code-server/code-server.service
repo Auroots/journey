@@ -1,0 +1,15 @@
+# /lib/systemd/system/code-server.service
+[Unit]
+Description=Code-Service
+After=network.target
+ 
+[Service]
+Type=forking
+ExecStart=/home/ubuntu/Auto_Script/code-manager.sh start
+ExecReload=/home/ubuntu/Auto_Script/code-manager.sh restart
+ExecStop=/home/ubuntu/Auto_Script/code-manager.sh stop
+KillMode=process
+User=ubuntu
+
+[Install]
+WantedBy=multi-user.target
