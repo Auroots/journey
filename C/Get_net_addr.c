@@ -102,7 +102,6 @@ int obtain_Interface_ip(void)
     printf("%s \n",ipAddr);
     return 0;
 }
-
 int main(void)
 {
 //     char sss = obtain_Interface_name2mac();
