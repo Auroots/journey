@@ -158,9 +158,10 @@ alias p='proxychains'
 alias f='ranger'
 alias sya="pacmixer "
 alias e="nvim"
+alias se="sudo nvim"
 alias syb="kmix"
 alias et="ethtool"
-
+alias ec="code ."
 
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.

@@ -1,296 +1,282 @@
-
-@keyframes blink-warning {
-    70% {
-        color: @light;
-    }
-
-    to {
-        color: @light;
-        background-color: @warning;
-    }
-}
-
-@keyframes blink-critical {
-    70% {
-      color: @light;
-    }
-
-    to {
-        color: @light;
-        background-color: @critical;
-    }
-}
-
-
-/* -----------------------------------------------------------------------------
- * Styles
- * -------------------------------------------------------------------------- */
-
-/* COLORS */
-
-/* Nord */
-@define-color bg #2E3440;
-/*@define-color bg #353C4A;*/
-@define-color light #D8DEE9;
-/*@define-color dark @nord_dark_font;*/
-@define-color warning #ebcb8b;
-@define-color critical #BF616A;
-@define-color mode #434C5E;
-/*@define-color workspaces @bg;*/
-/*@define-color workspaces @nord_dark_font;*/
-/*@define-color workspacesfocused #434C5E;*/
-@define-color workspacesfocused #4C566A;
-@define-color tray @workspacesfocused;
-@define-color sound #EBCB8B;
-@define-color network #5D7096;
-@define-color memory #546484;
-@define-color cpu #596A8D;
-@define-color temp #4D5C78;
-@define-color layout #5e81ac;
-@define-color battery #88c0d0;
-@define-color date #434C5E;
-@define-color time #434C5E;
-@define-color backlight #434C5E;
-@define-color nord_bg #434C5E;
-@define-color nord_bg_blue #546484;
-@define-color nord_light #D8DEE9;
-@define-color nord_light_font #D8DEE9;
-@define-color nord_dark_font #434C5E;
-
-/* Reset all styles */
 * {
-    border: none;
-    border-radius: 3px;
-    min-height: 0;
-    margin: 0.2em 0.3em 0.2em 0.3em;
+	border: none;
+	border-radius: 10;
+    /* font-family: "JetbrainsMono Nerd Font" ; */
+	font-size: 15px;
+	min-height: 6px;
+
+	/* margin-bottom: -20px; */
 }
 
-/* The whole bar */
-#waybar {
-    background: @bg;
-    color: @light;
-    font-family: "Cantarell", "Font Awesome 5 Pro";
-    font-size: 12px;
-    font-weight: bold;
+window#waybar {
+	background: transparent;
 }
 
-/* Each module */
-#battery,
-#clock,
-#cpu,
-#custom-layout,
-#memory,
-#mode,
-#network,
-#pulseaudio,
-#temperature,
-#custom-alsa,
-#custom-pacman,
-#custom-weather,
-#custom-gpu,
-#tray,
-#backlight,
-#language,
-#custom-cpugovernor {
-    padding-left: 0.6em;
-    padding-right: 0.6em;
+window#waybar.hidden {
+	opacity: 0.2;
 }
 
-/* Each module that should blink */
-#mode,
-#memory,
-#temperature,
-#battery {
+#window {
+	margin-top: 2px;
+	padding-left: 8px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+    color: transparent;
+	background: transparent;
+}
+
+#workspaces {
+	margin-top: 2px;
+	margin-left: 10px;
+	font-size: 4px;
+	margin-bottom: 5px;
+	border-radius: 3px;
+	background: #99c6f9;
+	transition: none;
+}
+
+#workspaces button {
+	transition: none;
+	color: #a4e4f6;
+	background: transparent;
+	font-size: 20px;
+	border-radius: 2px;
+}
+
+#workspaces button.occupied {
+	transition: none;
+	color: #F28FAD;
+	background: transparent;
+	font-size: 4px;
+}
+
+#workspaces button.focused {
+	color: #86e6eb;
+    border-top: 3px solid #d6fad2;
+    border-bottom: 6px solid #f57bba;
+}
+
+#workspaces button:hover {
+	transition: none;
+	box-shadow: inherit;
+	text-shadow: inherit;
+	color: #FAE3B0;
+    border-color: #E8A2AF;
+    color: #E8A2AF;
+}
+
+#workspaces button.focused:hover {
+    color: #E8A2AF;
+}
+
+#network {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
+	margin-bottom: 5px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #d1b0ff;
+}
+
+#pulseaudio {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
+	margin-bottom: 5px;
+	border-radius: 8px;
+	transition: none;
+	color: #1A1826;
+	background: #FAE3B0;
+}
+
+
+
+#battery.charging, #battery.plugged {
+	color: #161320;
+    background-color: #B5E8E0;
+}
+
+#battery.critical:not(.charging) {
+    background-color: #B5E8E0;
+    color: #161320;
+    animation-name: blink;
+    animation-duration: 0.2s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-direction: alternate;
 }
 
-/* Each critical module */
-#memory.critical,
-#cpu.critical,
-#temperature.critical,
-#battery.critical {
-    color: @critical;
-}
-
-/* Each critical that should blink */
-#mode,
-#memory.critical,
-#temperature.critical,
-#battery.critical.discharging {
-    animation-name: blink-critical;
-    animation-duration: 2s;
-}
-
-/* Each warning */
-#network.disconnected,
-#memory.warning,
-#cpu.warning,
-#temperature.warning,
-#battery.warning {
-    background: @warning;
-    color: @nord_dark_font;
-}
-
-/* Each warning that should blink */
-#battery.warning.discharging {
-    animation-name: blink-warning;
-    animation-duration: 3s;
-}
-
-/* And now modules themselves in their respective order */
-
-#mode { /* Shown current Sway mode (resize etc.) */
-    color: @light;
-    background: @mode;
-}
-
-/* Workspaces stuff */
-
-#workspaces {
- /*   color: #D8DEE9;
-    margin-right: 10px;*/
-}
-
-#workspaces button {
-    font-weight: bold; /* Somewhy the bar-wide setting is ignored*/
-    padding: 0;
-    /*color: #999;*/
-    opacity: 0.3;
-    background: none;
-    font-size: 1em;
-}
-
-#workspaces button.focused {
-    background: @workspacesfocused;
-    color: #D8DEE9;
-    opacity: 1;
-    padding: 0 0.4em;
-}
-
-#workspaces button.urgent {
-    border-color: #c9545d;
-    color: #c9545d;
-    opacity: 1;
-}
-
-#window {
-    margin-right: 40px;
-    margin-left: 40px;
-    font-weight: normal;
-}
-#bluetooth {
-    background: @nord_bg_blue;
-    font-size: 1.2em;
-    font-weight: bold;
-    padding: 0 0.6em;
-}
-#custom-gpu {
-    background: @nord_bg;
-    font-weight: bold;
-    padding: 0 0.6em;
-}
-#custom-weather {
-    background: @mode;
-    font-weight: bold;
-    padding: 0 0.6em;
-}
-#custom-pacman {
-    background: @nord_light;
-    color: @nord_dark_font;
-    font-weight: bold;
-    padding: 0 0.6em;
-}
-#custom-scratchpad-indicator {
-    background: @nord_light;
-    color: @nord_dark_font;
-    font-weight: bold;
-    padding: 0 0.6em;
-}
-#idle_inhibitor {
-    background: @mode;
-    /*font-size: 1.6em;*/
-    font-weight: bold;
-    padding: 0 0.6em;
-}
-#custom-alsa {
-    background: @sound;
-}
-
-#network {
-    background: @nord_bg_blue;
-}
-
-#memory {
-    background: @memory;
-}
-
-#cpu {
-    background: @nord_bg;
-    color: #D8DEE9;
-}
-#cpu.critical {
-    color: @nord_dark_font;
-}
-#language {
-    background: @nord_bg_blue;
-    color: #D8DEE9;
-    padding: 0 0.4em;
-}
-#custom-cpugovernor {
-    background-color: @nord_light;
-    color: @nord_dark_font;
-}
-#custom-cpugovernor.perf {
-    
-}
-#temperature {
-    background-color: @nord_bg;
-    color: #D8DEE9;
-}
-#temperature.critical {
-    background:  @critical;
-}
-#custom-layout {
-    background: @layout;
-}
-
-#battery {
-    background: @battery;
-}
-
-#backlight {
-    background: @backlight;
+@keyframes blink {
+    to {
+        background-color: #BF616A;
+        color: #B5E8E0;
+    }
 }
 
 #clock {
-    background: @nord_bg_blue;
-    color: #D8DEE9;
-}
-#clock.date {
-    background: @date;
-}
-
-#clock.time {
-    background: @mode;
-}
-
-#pulseaudio { /* Unsused but kept for those who needs it */
-    background: @nord_bg_blue;
-    color: #D8DEE9;
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
+	margin-bottom: 5px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #ABE9B3;
+	/*background: #1A1826;*/
 }
 
-#pulseaudio.muted {
-    background: #BF616A;
-    color: #BF616A;
-    /* No styles */
+#memory {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	margin-bottom: 5px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #DDB6F2;
 }
-#pulseaudio.source-muted {
-    background: #D08770;
-    color: #D8DEE9;
-    /* No styles */
+#cpu {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	margin-bottom: 5px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #96CDFB;
+}
+#temperature {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	margin-bottom: 5px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #96CDFB;
+}
+#custom-gpu {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	margin-bottom: 5px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #ffa8b4;
+}
+#language{
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	margin-bottom: 5px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #96CDFB;
+}
+#custom-weather{
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	margin-bottom: 5px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #96CDFB;
+}
+#disk {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	margin-bottom: 5px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #96CDFB;
+}
+
+
+#custom-launcher {
+	font-size: 25px;
+	margin-top: 2px;
+	margin-bottom: 5px;
+	margin-left: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+    color: #0095ff;
+    background: #e7fdff;
+	/* #996df0;#f096c5 */
 }
 #tray {
-    background: #434C5E;
+	margin-top: 2px;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 5px;
+	padding-left: 8px;
+	padding-right: 8px;
+	border-radius: 8px;
+	transition: none;
+	color: #B5E8E0;
+	background: #bba7ff;
+}
+#custom-wallpaper {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
+	margin-bottom: 5px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #C9CBFF;
+}
+
+#custom-updates {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
+	margin-bottom: 5px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #E8A2AF;
+}
+#custom-wayvnc {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
+	margin-bottom: 5px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #F2CDCD;
+}
+#custom-media {
+	margin-top: 2px;
+	margin-left: 10px;
+	padding-left: 8px;
+	padding-right: 8px;
+	margin-bottom: 5px;
+	border-radius: 8px;
+	transition: none;
+	color: #161320;
+	background: #F2CDCD;
 }

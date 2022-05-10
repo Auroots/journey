@@ -9,4 +9,4 @@ tempersature=$(($raw_temp/1000))
 deviceinfo=$(glxinfo -B | grep 'Device:' | sed 's/^.*: //')
 driverinfo=$(glxinfo -B | grep "OpenGL version")
 
-echo '{"text": "'$clock'GHz |  '$tempersature'°C <span color=\"darkgray\">| '$busypercent'%</span>", "class": "custom-gpu", "tooltip": "<b>'$deviceinfo'</b>\n'$driverinfo'"}'
+echo '{"text": "'$clock'GHz |   '$tempersature'°C <span color=\"#000000\">| '$busypercent'%</span>", "class": "custom-gpu", "tooltip": "<b>'$deviceinfo'</b>\n'$driverinfo'"}'

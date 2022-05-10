@@ -1,7 +1,7 @@
 # Copy this to ~/.config/sway/config and edit it to your liking.
 # Read `man 5 sway` for a complete reference.
 ### Auto start
-exec --no--startup-id fcitx -d -r --enable sogou-qimpanel
+exec /usr/bin/numlockx on 
 #exec --no--startup-id fcitx5 -d
 
 ### Variables
@@ -13,6 +13,18 @@ set $down j
 set $up k
 set $right l
 
+# Font, borders, and gaps   
+
+    font pango:Cantarell 12
+    gaps inner 5
+
+    gaps outer -2
+    gaps top -2
+    gaps bottom 0
+	# 窗口边框宽度
+    default_border pixel 2
+    default_floating_border pixel 2
+
 #set $term foot
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
@@ -22,10 +34,12 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 ### Output configuration
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg  /home/auroot/Pictures/Arch_auroot.jpg fill
+#output * bg  /home/auroot/Pictures/Arch_auroot.jpg fill
+output * bg  /home/auroot/Pictures/mao1.jpg fill
 #
 # Example configuration:
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+#output "DVI-D-1" transform 270
+#output DVI-D-1 resolution 1920x1080 position 1920,0 flipped-90
 # You can get the names of your outputs by running: swaymsg -t get_outputs
 
 ### Idle configuration
@@ -65,19 +79,27 @@ bindsym $mod+F6 exec xbacklight -inc 1
 # Set Software
     # Software initiator
     set $bemenu bemenu-run 
+    set $edge microsoft-edge-dev
+    set $file thunar
+    set $qv2ray /home/auroot/.config/qv2ray/Qv2ray-v2.7.0-linux-x64.AppImage
+    set $sogou fcitx -d -r --enable sogou-qimpanel > /dev/null 2>&1 &
 ### Key bindings
 # Basics:
     # Start a terminal
     bindsym $mod+Return exec kitty
+# bindsym $mod+Return exec alacritty
     # Kill focused window
     bindsym $mod+Shift+q kill
     # Start your launcher
-#bindsym $mod+d exec $menu
-#bindsym $mod+p exec $bemenu
+# bindsym $mod+d exec $menu
+# bindsym $mod+p exec $bemenu
     bindsym $mod+p exec wofi --show run
-    bindsym $mod+f exec thunar
-    bindsym $mod+b exec microsoft-edge-dev
+    bindsym $mod+f exec $file
+    bindsym $mod+Shift+y exec $qv2ray
+    bindsym $mod+Shift+t exec $sogou
+    bindsym $mod+s exec $edge
     bindsym $mod+c exec code  
+    bindsym $mod+pause exec wayvnc --config=$HOME/.config/wayvnc/config  
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.
@@ -87,7 +109,7 @@ bindsym $mod+F6 exec xbacklight -inc 1
     # Reload the configuration file
     bindsym $mod+Shift+c reload
     # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -B 'Yes, exit sway' 'swaymsg exit'
+    bindsym $mod+Shift+p exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway?.' -B 'Yes, exit sway' 'swaymsg exit'
 # Moving around:
     # Move your focus around
     bindsym $mod+$left focus left
@@ -114,17 +136,41 @@ bindsym $mod+F6 exec xbacklight -inc 1
 # Workspaces:
 #
     # Switch to workspace
-    bindsym $mod+1 workspace number 1
-    bindsym $mod+2 workspace number 2
-    bindsym $mod+3 workspace number 3
-    bindsym $mod+4 workspace number 4
-    bindsym $mod+5 workspace number 5
-    bindsym $mod+6 workspace number 6
-    bindsym $mod+7 workspace number 7
-    bindsym $mod+8 workspace number 8
-    bindsym $mod+9 workspace number 9
-    bindsym $mod+0 workspace number 10
-    # Move focused container to workspace
+#    bindsym $mod+1 workspace number 1
+#    bindsym $mod+2 workspace number 2
+#    bindsym $mod+3 workspace number 3
+#    bindsym $mod+4 workspace number 4
+#    bindsym $mod+5 workspace number 5
+#    bindsym $mod+6 workspace number 6
+#    bindsym $mod+7 workspace number 7
+#    bindsym $mod+8 workspace number 8
+#    bindsym $mod+9 workspace number 9
+#    bindsym $mod+0 workspace number 10
+bindsym --no-repeat $mod+1 workspace number 1; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+2 workspace number 2; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+3 workspace number 3; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+4 workspace number 4; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+5 workspace number 5; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+6 workspace number 6; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+7 workspace number 7; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+8 workspace number 8; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+9 workspace number 9; exec "echo 1 > /tmp/sovpipe"
+bindsym --no-repeat $mod+0 workspace number 10; exec "echo 1 > /tmp/sovpipe"
+
+bindsym --release $mod+1 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+2 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+3 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+4 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+5 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+6 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+7 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+8 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+9 exec "echo 0 > /tmp/sovpipe"
+bindsym --release $mod+0 exec "echo 0 > /tmp/sovpipe"
+
+
+
+# Move focused container to workspace
     bindsym $mod+Shift+1 move container to workspace number 1
     bindsym $mod+Shift+2 move container to workspace number 2
     bindsym $mod+Shift+3 move container to workspace number 3
@@ -143,16 +189,16 @@ bindsym $mod+F6 exec xbacklight -inc 1
     # You can "split" the current object of your focus with
     # $mod+b or $mod+v, for horizontal and vertical splits
     # respectively.
-    bindsym $mod+b splith
-    bindsym $mod+v splitv
+    bindsym $mod+Shift+b splith
+    bindsym $mod+Shift+v splitv
 
     # Switch the current container between different layout styles
-    bindsym $mod+s layout stacking
+    bindsym $mod+Shift+s layout stacking
     bindsym $mod+w layout tabbed
     bindsym $mod+e layout toggle split
 
     # Make the current focus fullscreen
-    bindsym $mod+f fullscreen
+    bindsym $mod+Shift+f fullscreen
 
     # Toggle the current focus between tiling and floating mode
     bindsym $mod+Shift+space floating toggle
@@ -182,16 +228,16 @@ mode "resize" {
     # right will grow the containers width
     # up will shrink the containers height
     # down will grow the containers height
-    bindsym $left resize shrink width 10px
-    bindsym $down resize grow height 10px
-    bindsym $up resize shrink height 10px
-    bindsym $right resize grow width 10px
+    bindsym $left resize shrink width 20px
+    bindsym $down resize grow height 20px
+    bindsym $up resize shrink height 20px
+    bindsym $right resize grow width 20px
 
     # Ditto, with arrow keys
-    bindsym Left resize shrink width 10px
-    bindsym Down resize grow height 10px
-    bindsym Up resize shrink height 10px
-    bindsym Right resize grow width 10px
+    bindsym Left resize shrink width 20px
+    bindsym Down resize grow height 20px
+    bindsym Up resize shrink height 20px
+    bindsym Right resize grow width 20px
 
     # Return to default mode
     bindsym Return mode "default"
@@ -210,11 +256,11 @@ bar {
     # The default just shows the current date and time.
 #    status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
 
-#    colors {
-#        statusline #ffffff
-#        background #323232
-#        inactive_workspace #32323200 #32323200 #5c5c5c
-#   }
+    colors {
+        statusline #ffffff
+        background #323232
+        inactive_workspace #323232 #323232 #5c5c5c
+   }
 }
 
 include /etc/sway/config.d/*

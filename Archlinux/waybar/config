@@ -1,97 +1,109 @@
 {
-    "layer": "top", // Waybar at top layer
-    "position": "bottom", // Waybar position (top|bottom|left|right)
-    // "height": 20, // Waybar height (to be removed for auto height)
-    // Choose the order of the modules
-    "modules-left": [ "clock", "sway/language", "custom/pacman", "sway/mode", "idle_inhibitor", "custom/media", "disk" ],
-    "modules-center": ["sway/workspaces"],
-    "modules-right": [ "custom/cpugovernor", "cpu", "temperature", "custom/gpu", "pulseaudio", "network", "tray"],
-    // "modules-right": [ "custom/cpugovernor", "cpu", "temperature", "custom/gpu", "pulseaudio", "bluetooth", "network", "tray"],
-    // Modules configuration
+    "layer": "top",
+    "position": "bottom",
+
+	"modules-left": ["custom/launcher","network","pulseaudio","memory","custom/updates","custom/media"],
+	"modules-center": ["sway/workspaces"],
+	"modules-right": ["custom/wayvnc","cpu","custom/gpu","clock","tray"],
+
     "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
         "format": "{icon}",
         "format-icons": {
-            "1": "<span color=\"#FFFFFF\">  </span>",
-            "2": "<span color=\"#88C0D0\">  </span>",
-            "3": "<span color=\"#A3BE8C\">  </span>",
-            "4": "<span color=\"#D8DEE9\">  </span>",
-            "5": "<span color=\"#D8DEE9\">  </span>",
-            "6": "<span color=\"#D8DEE9\">  </span>",
-            "7": "<span color=\"#D8DEE9\">  </span>",
-            "8": "<span color=\"#D8DEE9\">  </span>",
-            "urgent": "  ",
-            "focused": "  ",
-            "default": "  "
+            "1": "<span color=\"#ff3075\"></span>",
+            "2": "<span color=\"#ffe600\"></span>",
+            "3": "<span color=\"#687ddf\"></span>",
+            "4": "<span color=\"#674fe1\"></span>",
+            "5": "<span color=\"#ff6d6d\"></span>",
+            "6": "<span color=\"#ff6565\"></span>",
+            "urgent": "",
+            "focused": "<span color=\"#ed6c99\"></span>",
+            "default": "<span color=\"#fd8a42\"></span>"
         }
     },
-    "sway/mode": {
-        "format": "<span style=\"italic\">{}</span>"
-    },
-    "sway/window": {
-        "format": "{}",
-        "max-length": 50, 
-        "tooltip": "false"
-    },
+    "pulseaudio": {
+		"tooltip": false,
+		"scroll-step": 5,
+		"format": "{icon} {volume}%",
+		"format-muted": "{icon} {volume}%",
+		"on-click":"pactl set-sink-mute @DEFAULT_SINK@ toggle",
+		"format-icons": {
+			"default": ["", "", ""]
+		}
+	},
+	"tray":{
+		// "icon-size":50,
+		"spacing": 10
+	},
     "clock": {
-        "format": "{:  %Y / %m / %d - 周%a - %R}",
+        "format": "{:  %Y/%m/%d/周%a -  %R}",
         "interval": 60,
-        "max-length": 25,
-       // "format": "{: %a %Y %b %d %R %Z}"
-    },
-    // "bluetooth": {
-    //     "interval": 30,
-    //     "format": "{icon}",
-    //     // "format-alt": "{status}",
-    //     "format-icons": {
-    //         "enabled": "",
-    //         "disabled": ""
-    //     },
-    //     "on-click": "blueberry"
-    // },    
-    "sway/language": {
-        "format": "<big> </big> {}",
-        "max-length": 5,
-        "min-length": 5   
+        "max-length": 25
     },
 
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        },
-        "tooltip": "true"
+    "memory": {
+        "interval": 30,
+        "format": " {}%",
+        "max-length": 10
     },
+    "disk": {
+        "max-length": 10,
+        "tooltip": false,
+        "path": "/",
+        "interval": 60,
+        "min-length": 5,
+        "format": " {percentage_used}%",
+        "states": {
+        "critical": 90
+        }
+      },
+    "custom/media": {
+        "exec": "$HOME/.config/waybar/custom_modules/mediaplayer.py 2> /dev/null",
+        "format": "{icon} {}",
+        "return-type": "json",
+        "max-length": 25,
+        "min-length": 10,
+        "format-icons": {
+            "spotify": " ",
+            "default": " "
+        },
+        "escape": true,
+        "on-click": "playerctl play-pause"
+    },
+    "custom/launcher":{
+        "format":"",
+        "max-length": 2,
+        "min-length": 2,
+        "on-click": "wofi --show run",
+        "on-click-right": "killall wofi"
+    },
+    "custom/wayvnc":{
+        "format":"",
+        "max-length": 2,
+        "min-length": 2,
+        "on-click": "wayvnc --config=$HOME/.config/wayvnc/config &",
+        "on-click-right": "killall wayvnc"
+    },
+    "custom/updates":{
+        "interval": 360,
+        "format": " Update: {} <big></big>",
+        "exec": "checkupdates | wc -l",
+        "exec-if": "[[ $(checkupdates | wc -l) != 0 ]]",
+        "on-click": "kitty -e paru -Syu && pkill -SIGRTMIN+8 waybar ",
+        "signal": 8,
+        "max-length": 15,
+        "min-length": 7
+    },  
     "tray": {
-        //"icon-size": 11,
+        "icon-size": 18,
         "spacing": 5
     },
-    "cpu": {
-        "interval": "1",      
-        "format": "CPU   {max_frequency}GHz <span color=\"darkgray\">| {usage}%</span>",
-        "max-length": 19,
-        "min-length": 16,
-        "on-click": "kitty -e htop --sort-key PERCENT_CPU",
-        "tooltip": false
-    },
-    "temperature": {
-        //"thermal-zone": 1,
-        "interval": "4",
-        "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
-        "critical-threshold": 74,
-        "format-critical": "  {temperatureC}°C",
-        "format": "{icon}  {temperatureC}°C",
-        "format-icons": ["", "", ""],
-        "max-length": 7,
-        "min-length": 7
-    },
+    
     "network": {
-        // "interface": "wlan0", // (Optional) To force the use of this interface,
-
         "format-wifi": "  {essid}",
-        "format-ethernet": "  {ifname}: {ipaddr}/{cidr}",
+        "format-ethernet": " {ipaddr}",
+        // "format-ethernet": "  {ifname}: {ipaddr}/{cidr}",
         "format-linked": "  {ifname} (No IP)",
         "format-disconnected": "",
         "format-alt": "{ifname}: {ipaddr}/{cidr}",
@@ -101,14 +113,12 @@
     },
     
     "pulseaudio": {
-        "scroll-step": 3, // %, can be a float
+        "scroll-step": 3, 
         "format": "{icon} {volume}% {format_source}",
         "format-bluetooth": "{volume}% {icon} {format_source}",
         "format-bluetooth-muted": " {icon} {format_source}",
         "format-muted": " {format_source}",
         "format-source": "   {volume}%",
-        //"format-source-muted": "",
-        // "format-source": "",
         "format-source-muted": "",
         "format-icons": {
             "headphone": "",
@@ -122,60 +132,39 @@
         "on-click": "pavucontrol",
         "on-click-right": "pactl set-source-mute @DEFAULT_SOURCE@ toggle"
     },
-    "custom/pacman": {
-        "format": "<big></big>  {}",
-        "interval": 3600,                     // every hour
-        "exec": "checkupdates | wc -l",       // # of updates
-        "exec-if": "exit 0",                  // always run; consider advanced run conditions
-        "on-click": "kitty -e 'paru'; pkill -SIGRTMIN+8 waybar", // update system
-        "signal": 8,
-        "max-length": 6,
-        "min-length": 4
-    },
+
     "custom/weather": {
-        "exec": "curl 'https://wttr.in/?format=1'",
+        "exec": "curl 'https://wttr.in/Hunan+Yueyang?format=1'",
         "interval": 3600
     },
     "custom/gpu": {
       "exec": "$HOME/.config/waybar/custom_modules/custom-gpu.sh",
       "return-type": "json",
-      "format": " GPU   {}",
+      "format": "   {}",
       "interval": 2,
       "tooltip": "{tooltip}",
-      "max-length": 22,
+      "max-length": 24,
       "min-length": 20,
       "on-click": "powerupp"
     }, 
-    "custom/cpugovernor": {
-      "format": "{icon}",
-      "interval": "30",
-      "return-type": "json",
-      "exec": "$HOME/.config/waybar/custom_modules/cpugovernor.sh",
-      "min-length": 6,
-      "max-length": 6,
-        "format-icons": {
-            "perf": "",
-            "sched": "",
-        },
-    },    
-    "custom/media": {
-        "format": "{icon} {}",
-        "return-type": "json",
-        "max-length": 40,
-        "format-icons": {
-            "spotify": "",
-            "default": "🎜"
-        },
-        "escape": true,
-        "exec": "$HOME/.config/waybar/mediaplayer.py 2> /dev/null" // Script in resources folder
-        // "exec": "$HOME/.config/waybar/mediaplayer.py --player spotify 2> /dev/null" // Filter player based on name
+    "cpu": {
+        "interval": "1",      
+        "format": "   {avg_frequency}Ghz<span color=\"#000000\"> | {usage}% | {load}</span>",
+        "max-length": 23,
+        "min-length": 18,
+        "on-click": "kitty -e htop --sort-key PERCENT_CPU",
+        "tooltip": false
+        
     },
-    "disk": {
-        "path": "/",
-        "format": " {percentage_free}%",
-        "interval": 2,
-        "return-type": "json",
+    "temperature": {
+        "tooltip": false,
         "min-length": 6,
-        "max-length": 10
-    }
+        "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+        "critical-threshold": 90,
+        "format": "{icon} {temperatureC}°C",
+        "format-critical": "{icon} {temperatureC}°C",
+        "format-icons": {
+        "default": ["", "", "", "", ""]
+        }
+      }
 }
