@@ -1107,7 +1107,100 @@ let s2 = s1;
 ```
 
 - 当创建String类型时，Rust会向系统申请一块堆内存，将指向存放字符串内容的指针(ptr)，长度(len)，及一个容量(capacity)，这三样东西，存放至栈上；
-- 
+
+
+
+- 当一个变量离开当前作用域时，Rust会自动调用Drop函数，并将变量使用的堆内存释放回收；
+
+```rust
+fn main(){
+    s1 = 2;
+    s2 = s1;
+    println!("s1 = {}, s2 = {}", s1, s2);
+}
+```
+
+- 由于整形类型可以在编译时确定自己的大小，且数据完整地存储在栈上，所有对于这类型值的copy永远都是快速的，与String类型不同，Rust不会阻止整数类型的有效性；
+
+
+
+
+
+**变量和数据的交互方式：克隆**
+
+```rust
+let s1 = String::from("hello");
+let s2 = s1.clone();
+
+println!("s1 = {}, s2 = {}", s1, s2);
+```
+
+- 任何**简单标量**的组合类型都可以是Copy的；
+- 任何需要分配内存或某种资源的类型都不会是Copy的；
+
+拥有Copy trait的类型有：
+
+- 所有的整数类型；
+- 仅拥有两种值(true or false)的布尔类型：bool；
+- 字符类型：char；
+- 所有的浮点类型；
+- 如果元组所包含的所有字段仅拥有以上4点，那么这个元组也可以Copy；
+
+
+
+### 所有权与函数
+
+- 将值传递给函数在语义上类型与对变量进行赋值；
+- 将变量传递给函数将会触发移动或复制；
+
+```rust
+fn main() {
+    let s = String::from("hello");  // 变量s 进入作用域
+    takes_ownership(s); // s的值被移动至函数
+}
+
+fn takes_ownership(some: String) { // 变量some 进入作用域
+    println!("{}", some);
+}// some 离开作用与，drop函数自动调用，some被清理
+```
+
+
+
+### 引用与借用
+
+```rust
+fn main() { 
+    let s1 = String::from("hello"); 
+    let len = str_len(&s1); 
+    println!("The length of '{}' is {}.", s1, len); 
+} 
+   fn str_len(s: &String) -> usize { 
+    s.len() 
+}
+```
+
+
+
+- 引用运算符：`&`，允许在不获取所有权的前提下使用值；
+- 解引用运算符：`*`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1119,7 +1212,7 @@ let s2 = s1;
 
 
 
-
+Q
 
 
 
@@ -1177,11 +1270,60 @@ let s2 = s1;
 
 
 
+### 字符串
 
+#### 更新String
 
+- `push_str()`方法 ：把一个字符串切片附加到`String`；
 
+    - ```rust
+        let mut s = String::from("foo");
+        s.push_str("bar");
+        ```
 
+    - ```rust
+        let mut s1 = String::from("foo");
+        let s2 = "bar";
+        s1.push_str(s2);
+        println!("s2 is {}", s2);
+        ```
 
+- `push()`方法 ：把单个字符附加到`String`；
+
+    - ```rust
+        let mut s = String::from("lo");
+        s.push('l');
+        ```
+
+- `+`运算符 ：连接字符串
+
+    - ```rust
+        let s1 = String::from("Hello, ");
+        let s2 = String::from("world!");
+        let s3 = s1 + "-" + &s2;
+        ```
+
+    - 使用了类似这个签名的方法：
+
+    -  ```rust
+        fn add(self, s: &str) -> String {...}
+        ```
+
+        - 标准库中`add`方法使用了泛型
+        - 只能把`&str`添加到`String`
+        - 解引用强制转换(deref coercion)
+
+- `format!`宏：连接多个字符串，不会夺取任何参数的所有权； 
+
+    - ```rust
+        let s1 = String::from("tic");
+        let s2 = String::from("tac");
+        let s3 = String::from("toe");
+        
+        let s = format!("{}-{}-{}", s1, s2, s3);
+        ```
+
+- `println!`宏：将结果打印到屏幕；
 
 
 
