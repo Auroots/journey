@@ -1,0 +1,9 @@
+[package]
+name = "hecto"
+version = "0.1.0"
+authors = ["Auroot <2763833502@qq.com>"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]

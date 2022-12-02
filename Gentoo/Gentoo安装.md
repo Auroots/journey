@@ -1,5 +1,15 @@
 # Gentoo安装
 
+https://mirrors.ustc.edu.cn/gentoo/releases/amd64/autobuilds/current-stage3-amd64-openrc/stage3-amd64-desktop-openrc-20221127T170156Z.tar.xz
+
+
+
+https://mirrors.ustc.edu.cn/gentoo/snapshots/gentoo-20221129.tar.xz
+
+
+
+
+
 ## 准备:
 
 1. 至少一个人
@@ -176,10 +186,9 @@ COMMON_FLAGS="-march=ivybridge -O2 -pipe"
 以下参数在经过自己调整或选择之后加入到 `/mnt/gentoo/etc/portage/make.conf`
 
 - CFLAGS: 将CFLAGS修改为`CFLAGS="-march=native -O2 -pipe"` 或者你也可以指定 [如何为选择编译器CPU - Gentoo Wiki](https://wiki.gentoo.org/wiki/Safe_CFLAGS)，例如我的Intel CPU是haswell,将native换成haswell就行(不确定就不要指定).你也可以在[这里](https://www.funtoo.org/Subarches)看到所有可以设置的值
-
 - USE: 首先,你可以删掉默认的USE标记，加上`-bindist` (不了解USE的情况下建议如此)
 - 
-- MAKEOPTS: 根据你的CPU核心数设置MAKEOPTS例如双四线程设置为`MAKEOPTS="-j5"`
+- MAKEOPTS: 根据你的CPU核心数设置MAKEOPTS例如双四线程设置为`MAKEOPTS="-jobs 5"`
 - GENTOO_MIRRORS: 设置为`GENTOO_MIRRORS="https://mirrors.ustc.edu.cn/gentoo/"` 请自行选择速度最快的Mirror
 - EMERGE_DEFAULT_OPTS: 设置为`EMERGE_DEFAULT_OPTS="--keep-going --with-bdeps=y"`是个不错的选择,keep going意为安装一堆软件时遇到编译错误自动跳过这个软件继续编译安装
 - FEATURES: 在这里最好写成`# FEATURES="${FEATURES} -userpriv -usersandbox -sandbox"`,最好在前面加上#注释掉,在你编译软件遇到权限不足时去掉注释即可解决问题（但请务必注意是不是因为`rm -rf /*`等命令权限不足，因为说不定你的ebuild文件被篡改了）

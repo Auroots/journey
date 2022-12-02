@@ -1,5 +1,8 @@
 {
-    "cSpell.words": [
-        "auroot"
-    ]
+    "editor.fontLigatures": true,  //设置字体连体
+    "editor.fontSize": 14, //设置字体大小
+    "editor.fontWeight": "normal", //设置字体粗细
+    "editor.fontFamily": "JetBrains Mono",
+    "font-switcher.enableLivePreview": true,
 }
+

@@ -18,22 +18,22 @@ fn main(){
     // row.push(Spread::Int(22));
 
 
-    // let mut v = Vec::new();
-    // // let a = &v[1];
+    let mut v = Vec::new();
+    // let a = &v[1];
 
-    // v.push(6);
-    // v.push(6);
+    v.push(6);
+    v.push(6);
 
-    // for i in &mut v {
+    for i in &mut v {
         
-    //     println!("{}", i);
-    // }
-    // let third: i32 = v[200];
+        println!("{}", i);
+    }
+    let third: i32 = v[200];
 
-    // println!("The third element is {}", third);
+    println!("The third element is {}", third);
 
-    // match v.get(100) {
-    //     Some(third) => println!("The third element is {}", third),
-    //     None => println!("There is no third element.")
-    // }
+    match v.get(100) {
+        Some(third) => println!("The third element is {}", third),
+        None => println!("There is no third element.")
+    }
 }
