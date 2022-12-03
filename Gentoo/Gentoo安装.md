@@ -8,6 +8,8 @@ https://mirrors.ustc.edu.cn/gentoo/snapshots/gentoo-20221129.tar.xz
 
 
 
+emerge dev-vcs/git
+
 
 
 ## 准备:
@@ -200,12 +202,13 @@ COMMON_FLAGS="-march=ivybridge -O2 -pipe"
 - GRUB_PLATFORMS: 如果你使用GRUB且使用UEFI启动则添加`GRUB_PLATFORMS="efi-64"`
 - Portage Mirror: 这个不是make.conf的选项.`mkdir /mnt/gentoo/etc/portage/repos.conf`创建repos.conf目录并添加如下到/mnt/gentoo/etc/portage/repos.conf/gentoo.conf文件里面(自行选择速度最快的镜像站):
 
+安装：emerge dev-vcs/git
+
 ```bash
 [gentoo]
 location = /usr/portage
-sync-type = rsync
-#sync-uri = rsync://mirrors.tuna.tsinghua.edu.cn/gentoo-portage/
-sync-uri = rsync://rsync.mirrors.ustc.edu.cn/gentoo-portage/
+sync-type = git
+sync-uri = rsync://mirrors.bfsu.edu.cn/gentoo-portage
 auto-sync = yes
 ```
 
@@ -214,6 +217,7 @@ auto-sync = yes
 ```bash
 emerge --ask app-portage/cpuid2cpuflags
 cpuid2cpuflags #将输出值改入CPU_FLAGS_X86
+echo "*/* $(cpuid2cpuflags)" >> /etc/portage/package.use/00cpuflags
 ```
 
 示例配置（请以实际为标准）：
@@ -240,8 +244,7 @@ USE="${SUPPORT} ${DESKTOP} ${FUCK} ${ELSE}"
 PORTDIR="/usr/portage"
 DISTDIR="${PORTDIR}/distfiles"
 PKGDIR="${PORTDIR}/packages"
-# GENTOO_MIRRORS="https://mirrors.tuna.tsinghua.edu.cn/gentoo/"
-GENTOO_MIRRORS="https://mirrors.ustc.edu.cn/gentoo/"
+GENTOO_MIRRORS="https://mirrors.bfsu.edu.cn/gentoo"
 EMERGE_DEFAULT_OPTS="--ask --verbose=y --keep-going --with-bdeps=y --load-average"
 # FEATURES="${FEATURES} -userpriv -usersandbox -sandbox"
 PORTAGE_REPO_DUPLICATE_WARN="0"
@@ -616,134 +619,7 @@ cd /usr/src/linux
 make menuconfig
 ```
 
-**KERNEL** **启用 Gentoo 特有选项**
 
-```bash
-Gentoo Linux --->
-  Generic Driver Options --->
-    [*] Gentoo Linux support
-    [*]   Linux dynamic and persistent device naming (userspace devfs) support
-    [*]   Select options required by Portage features
-        Support for init systems, system and service managers  --->
-          [*] OpenRC, runit and other script based systems and managers
-          [*] systemd
-```
-
-**KERNEL** **启用 devtmpfs 支持**
-
-```bash
-Device Drivers --->
-  Generic Driver Options --->
-    [*] Maintain a devtmpfs filesystem to mount at /dev
-    [*]   Automount devtmpfs at /dev, after the kernel mounted the rootfs
-```
-
-验证 SCSI 磁盘支持是否已激活(CONFIG_BLK_DEV_SD):
-
-**KERNEL** **Enabling SCSI disk support**
-
-```bash
-Device Drivers --->
-   SCSI device support  --->
-      <*> SCSI disk support
-```
-
-**KERNEL** **选择所需要的文件系统**
-
-```
-File systems --->
-  <*> Second extended fs support
-  <*> The Extended 3 (ext3) filesystem
-  <*> The Extended 4 (ext4) filesystem
-  <*> Reiserfs support
-  <*> JFS filesystem support
-  <*> XFS filesystem support
-  <*> Btrfs filesystem support
-  DOS/FAT/NT Filesystems  --->
-    <*> MSDOS fs support
-    <*> VFAT (Windows-95) fs support
- 
-  Pseudo Filesystems --->
-    [*] /proc file system support
-    [*] Tmpfs virtual memory file system support (former shm fs)
-```
-
-**KERNEL** **选择PPPoE所需要的驱动**
-
-```
-Device Drivers --->
-  Network device support --->
-    <*> PPP (point-to-point protocol) support
-    <*>   PPP support for async serial ports
-    <*>   PPP support for sync tty ports
-```
-
-**KERNEL** **激活SMP支持**
-
-```
-Processor type and features  --->
-  [*] Symmetric multi-processing support
-```
-
-**KERNEL** **激活USB输入设备的支持**
-
-```
-HID support  --->
-    -*- HID bus support
-    <*>   Generic HID driver
-    [*]   Battery level reporting for HID devices
-      USB HID support  --->
-        <*> USB HID transport layer
-  [*] USB support  --->
-    <*>     xHCI HCD (USB 3.0) support
-    <*>     EHCI HCD (USB 2.0) support
-    <*>     OHCI HCD (USB 1.1) support
-```
-
-**KERNEL** **选择处理器类型和功能**
-
-如果要支持32位程序，请确保选择IA32 Emulation(CONFIG_IA32_EMULATION)。Gentoo 默认会安装一个multilib 系统（混合 32 位/ 64 位计算），所以除非使用了一个 no-multilib 配置文件，否则这个选项是必需的。
-
-```
-Processor type and features  --->
-   [ ] Machine Check / overheating reporting 
-   [ ]   Intel MCE Features
-   [ ]   AMD MCE Features
-   Processor family (AMD-Opteron/Athlon64)  --->
-      ( ) Opteron/Athlon64/Hammer/K8
-      ( ) Intel P4 / older Netburst based Xeon
-      ( ) Core 2/newer Xeon
-      ( ) Intel Atom
-      ( ) Generic-x86-64
-Executable file formats / Emulations  --->
-   [*] IA32 Emulation
-```
-
-**KERNEL** **启用对GPT的支持**
-
-如果在分区时使用GPT分区标签，则启用对它的支持 (CONFIG_PARTITION_ADVANCED and CONFIG_EFI_PARTITION)：
-
-```
--*- Enable the block layer --->
-   Partition Types --->
-      [*] Advanced partition selection
-      [*] EFI GUID Partition support
-```
-
-**KERNEL** **启用对UEFI的支持**
-
-如果使用UEFI来引导系统，则在内核中启用EFI桩支持和EFI变量 (CONFIG_EFI, CONFIG_EFI_STUB, CONFIG_EFI_MIXED, and CONFIG_EFI_VARS)：
-
-```
-Processor type and features  --->
-    [*] EFI runtime service support 
-    [*]   EFI stub support
-    [*]     EFI mixed-mode support
- 
-Firmware Drivers  --->
-    EFI (Extensible Firmware Interface) Support  --->
-        <*> EFI Variable Support via sysfs
-```
 
 ### 编译和安装
 
@@ -766,7 +642,7 @@ dracut --hostonly
 nano -w /etc/portage/make.conf:
 GRUB_PLATFORMS="efi-64"
 
-emerge --ask sys-boot/grub:2
+emerge --ask sys-boot/grub
 emerge --ask sys-boot/os-prober
 
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=Gentoo
@@ -782,14 +658,7 @@ mount -t efivarfs efivarfs /sys/firmware/efi/efivars
 rm /sys/firmware/efi/efivars/dump-*
 ```
 
-然后重试（由 @Chara 提议加上）
 
-#### Legacy:
-
-```bash
-grub-install --target=i386-pc /dev/sda
-grub-mkconfig -o /boot/grub/grub.cfg
-```
 
 
 
