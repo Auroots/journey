@@ -1,0 +1,10 @@
+[package]
+name = "text-encrypt"
+version = "0.5.0"
+edition = "2021"
+authors = ["auroot <czjishu@gmail.com>"]
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+base64 = "0.21.3"
+colored = "2.0"

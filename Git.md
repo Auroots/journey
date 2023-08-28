@@ -4,6 +4,8 @@
 | -------------------------------------- | ------------------------------------------------ |
 | git config --global user.name 用户名   | 设置用户名                                       |
 | git config --global user.email 邮箱    | 设置用户签名（邮箱）                             |
+| git config --global  --list            | 显示用户列表                                     |
+| Ssh-keygen -t rsa -C “Git邮箱地址”     | 生成ssh                                          |
 | git init                               | 初始化本地库                                     |
 | git status                             | 查看本地库状态                                   |
 | git add [文件名]                       | 添加到暂存区                                     |

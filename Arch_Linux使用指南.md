@@ -187,7 +187,7 @@ arch-chroot /mnt /bin/bash             # chroot 进入创建好的系统
 ```shell
 ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime     # 上海
 
-hwclock --systohc       #运行 hwclock 以生成 /etc/adjtime
+hwclock --systohc --utc       #运行 hwclock 以生成 /etc/adjtime
 ```
 
 **本地化**
@@ -199,7 +199,7 @@ sed  -i "24i zh_CN.UTF-8 UTF-8" /etc/locale.gen
 locale-gen             # 生成 locale
 ```
 
-**系统语言**
+**系统语言** 
 
 ```shell
 echo "LANG=en_US.UTF-8" > /etc/locale.conf       # 英文
@@ -540,150 +540,6 @@ sudo pacman -S gnome-tweaks gnome-shell-extensions
 > Window Is Ready - Notification Remover      去除烦人的window is ready提醒
 
 
--------------------------------------------------------------------------------
-
-
-
-### Sway  [ Wayland ]
-
-```bash
-# 安装 
-sudo pacman -S wlroots sway qt5-wayland glfw-wayland
-# tty中执行
-sway
-# sway的配置
-cp /etc/sway/config ~/.config/sway/
-vim ~/.config/sway/config
-	# 设置屏幕和桌面壁纸
-	output * bg <你自己的桌面壁纸图片路径> fill
-```
-
-**兼容 X11**
-
-```bash
-xwayland enabled
-# 安装 Xwayland
-sudo pacman -S xorg-xwayland 
-# 检测 XWayland
-sudo pacman -S xorg-xlsclients
-> xlsclients
-```
-
-**使用vulkan做渲染后端**
-
-```bash
-sudo pacman -S vulkan-validation-layers
-# 设置启动环境(如果不设置可以用，可以不用设置，我没设置)
-vim ~/.pam_environment
-	WLR_RENDERER=vulkan
-# tty中执行 进入sway(vulkan)桌面
-sway
-# 如果使用vulkan中遇到问题可以试试这个
-vim ~/.pam_environment
-	WLR_RENDERER=gles2
-```
-
-**免密码登录 service**
-
-```bash
-sudo mkdir /etc/systemd/system/getty@tty1.service.d
-
-sudo vim /etc/systemd/system/getty@tty1.service.d/override.conf :
-[Service]
-ExecStart=
-ExecStart=-/usr/bin/agetty --autologin <你的用户名> --noclear %I $TERM
-Type=idle
-```
-
-
-
-```bash
-vim ~/.config/sway/config ：
-    ### Key bindings
-    bindsym $mod+p exec wofi --show run
-    # bindsym $mod+p exec bemenu-run
-```
-**firefox**
-
-```
-vim ~/.pam_environment ：
-	MOZ_ENABLE_WAYLAND=1
-```
-**fcitx5输入法**
-
-```bash
-vim ~/.config/sway/config ：
-### Auto start
-exec --no-startup-id fcitx5 -d
-vim ~/.pam_environment ：
-
-GTK_IM_MODULE DEFAULT=fcitx
-QT_IM_MODULE  DEFAULT=fcitx
-XMODIFIERS    DEFAULT=@im=fcitx
-INPUT_METHOD  DEFAULT=fcitx
-SDL_IM_MODULE DEFAULT=fcitx
-```
-**mpv播放器**
-
-```bash
-vim .config/mpv/mpv.conf ：
-
-vo=gpu
-gpu-api=vulkan（或opengl）
-gpu-context=waylandvk（或wayland）
-spirv-compiler=shaderc
-vulkan-swap-mode=fifo
-vulkan-async-transfer=yes
-vulkan-async-compute=yes
-```
-**屏幕亮度、音量调节**
-
-```bash
-sudo pacman -S acpilight（用于Intel核显）
-sudo pacman -S alsa-utils alsa-plugins
-```
- **配置**
- ```bash
-vim ~/.config/sway/config ：
-# Set Volumn
-bindsym $mod+F1 exec amixer -qM set Speaker toggle
-bindsym $mod+F2 exec amixer -qM set Master 2%- unmute
-bindsym $mod+F3 exec amixer -qM set Mater 2%+ unmute
-bindsym $mod+F4 exec amixer -qM set Headphone toggle
-
-# Set Backlight
-bindsym $mod+F5 exec xbacklight -dec 1
-bindsym $mod+F6 exec xbacklight -inc 1
- ```
-**状态栏waybar，类似于X11下的polybar**
-
-```bash
-sudo pacman -S waybar otf-font-awesome
-
-vim ~/.config/sway/config :
-bar {
-    position top
-    swaybar_command waybar
-        
-    #status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
-
-    #colors {
-        #statusline #ffffff
-        #background #323232
-        #inactive_workspace #32323200 #32323200 #5c5c5c
-    #}
-}
-
-```
-
-**启动应用的软件(二选一)**
-
-```bash
-sudo pacman -S wofi 			# xorg	 启动应用的软件
-sudo pacman -S bemenu-wayland   # wayland启动应用的软件
-```
-
-
 
 ### I3 WM  [ Xorg]
 
@@ -856,6 +712,161 @@ xrandr --output [输出地址] --mode 1920x1080 --rate 60.00
 
 
 
+### Sway  [ Wayland ]
+
+>   -   [Sway](https://swaywm.org/) 一个平铺式窗口管理器。
+>   -   [Waybar](https://github.com/Alexays/Waybar) 一个与 [Polybar](https://github.com/polybar/polybar) 非常相似的状态条。
+>   -   [Wofi](https://hg.sr.ht/~scoopta/wofi) 一个纯 GTK（也就是 Wayland）的可定制应用程序启动器。
+>   -   [Alacritty](https://github.com/alacritty/alacritty) 一个现代化的终端，”又不是不能用”。
+
+```bash
+# 安装 
+sudo pacman -S wlroots sway qt5-wayland glfw-wayland waybar wofi
+# tty中执行
+sway
+# sway的配置
+cp /etc/sway/config ~/.config/sway/
+vim ~/.config/sway/config
+	# 设置屏幕和桌面壁纸
+	output * bg <你自己的桌面壁纸图片路径> fill
+```
+
+**兼容 X11**
+
+```bash
+xwayland enabled
+# 安装 Xwayland
+sudo pacman -S xorg-xwayland  
+# 检测 XWayland
+sudo pacman -S xorg-xlsclients
+> xlsclients
+```
+
+**使用vulkan做渲染后端**
+
+```bash
+sudo pacman -S vulkan-validation-layers
+# 设置启动环境(如果不设置可以用，可以不用设置，我没设置)
+vim ~/.pam_environment
+	WLR_RENDERER=vulkan
+# tty中执行 进入sway(vulkan)桌面
+sway
+# 如果使用vulkan中遇到问题可以试试这个
+vim ~/.pam_environment
+	WLR_RENDERER=gles2
+```
+
+**免密码登录 service**
+
+```bash
+sudo mkdir /etc/systemd/system/getty@tty1.service.d
+
+sudo vim /etc/systemd/system/getty@tty1.service.d/override.conf :
+[Service]
+ExecStart=
+ExecStart=-/usr/bin/agetty --autologin <你的用户名> --noclear %I $TERM
+Type=idle
+```
+
+
+
+```bash
+vim ~/.config/sway/config ：
+    ### Key bindings
+    bindsym $mod+p exec wofi --show run
+    # bindsym $mod+p exec bemenu-run
+```
+
+**firefox**
+
+```
+vim ~/.pam_environment ：
+	MOZ_ENABLE_WAYLAND=1
+```
+
+**fcitx5输入法**
+
+```bash
+vim ~/.config/sway/config ：
+### Auto start
+exec --no-startup-id fcitx5 -d
+vim ~/.pam_environment ：
+
+GTK_IM_MODULE DEFAULT=fcitx
+QT_IM_MODULE  DEFAULT=fcitx
+XMODIFIERS    DEFAULT=@im=fcitx
+INPUT_METHOD  DEFAULT=fcitx
+SDL_IM_MODULE DEFAULT=fcitx
+```
+
+**mpv播放器**
+
+```bash
+vim .config/mpv/mpv.conf ：
+
+vo=gpu
+gpu-api=vulkan（或opengl）
+gpu-context=waylandvk（或wayland）
+spirv-compiler=shaderc
+vulkan-swap-mode=fifo
+vulkan-async-transfer=yes
+vulkan-async-compute=yes
+```
+
+**屏幕亮度、音量调节**
+
+```bash
+sudo pacman -S acpilight（用于Intel核显）
+sudo pacman -S alsa-utils alsa-plugins
+```
+
+ **配置**
+
+ ```bash
+vim ~/.config/sway/config ：
+# Set Volumn
+bindsym $mod+F1 exec amixer -qM set Speaker toggle
+bindsym $mod+F2 exec amixer -qM set Master 2%- unmute
+bindsym $mod+F3 exec amixer -qM set Mater 2%+ unmute
+bindsym $mod+F4 exec amixer -qM set Headphone toggle
+
+# Set Backlight
+bindsym $mod+F5 exec xbacklight -dec 1
+bindsym $mod+F6 exec xbacklight -inc 1
+ ```
+
+**状态栏waybar，类似于X11下的polybar**
+
+```bash
+sudo pacman -S waybar otf-font-awesome
+
+vim ~/.config/sway/config :
+bar {
+    position top
+    swaybar_command waybar
+        
+    #status_command while date +'%Y-%m-%d %I:%M:%S %p'; do sleep 1; done
+
+    #colors {
+        #statusline #ffffff
+        #background #323232
+        #inactive_workspace #32323200 #32323200 #5c5c5c
+    #}
+}
+
+```
+
+**启动应用的软件(二选一)**
+
+```bash
+sudo pacman -S wofi 			# xorg	 启动应用的软件
+sudo pacman -S bemenu-wayland   # wayland启动应用的软件
+```
+
+
+
+
+
 ## 常用软件
 
 ```bash
@@ -877,15 +888,19 @@ sudo pacman -S wine-wechat        	# Wine集成的Windows平台的微信
 sudo pacman -S wine-mono 			# wine-wechat可能需要安装wine-mono字体
 sudo pacman -S transmission-qt    	# 基于Qt的图形化界面的Transmission
 sudo pacman -S transmission-gtk   	# 基于GTK的图形化界面的Transmission
-sudo pacman -S qbittorrent			# qBittorrent BT下载工具
-sudo pacman -S gparted 				# Gparted 磁盘无损分区工具
-sudo pacman -S acpi 				# 电池状况监控工具
-sudo pacman -S xarchiver 			# Xarchiver 图形化的解压缩软件
+sudo pacman -S qbittorrent					# qBittorrent BT下载工具
+sudo pacman -S gparted 							# Gparted 磁盘无损分区工具
+sudo pacman -S acpi 								# 电池状况监控工具
+sudo pacman -S xarchiver 						# Xarchiver 图形化的解压缩软件
 sudo pacman -S virtualbox           # virtualbox 虚拟机
 sudo pacman -S vmware-workstation   # vmware 虚拟机
 sudo pacman -S virtualbox-guest-utils # VirtualBox 拓展
-sudo pacman -S qview	 # 超简洁看图软件
-sudo pacman -S flameshot # 截图工具
+sudo pacman -S qview	 							# 超简洁看图软件
+sudo pacman -S flameshot 						# 截图工具
+sudo pacman -S redshift							# 护眼工具，需要额外配置
+sudo pacman -S wqy-microhei 				# 开源中文字体
+sudo pacman -S ttf-wps-fonts 				# 中文办公软件WPS的字体包, 安装WPS必须安装的包
+sudo pacman -S foxitreader 					# 福昕PDF阅读软件
 # AUR
 paru -S vundle-git           # 安装vim的插件管理器
 paru -S deepin.com.qq.office # TIM
@@ -1404,5 +1419,96 @@ echo 'Server = https://mirrors.tuna.tsinghua.edu.cn/blackarch/$repo/os/$arch' >>
     sudo pacman -Syu archlinuxcn-keyring
 ```
 
--------------------------------------------------------------------------------
+
+
+#### 禁用UTC解决双系统时间问题
+
+>   Windows双系统时间不统一在于时间表示有两个标准：localtime 和 UTC(Coordinated Universal Time) 。UTC 是与时区无关的全球时间标准。尽管概念上有差别，UTC 和 GMT (格林威治时间) 是一样的。localtime 标准则依赖于当前时区。
+>
+>   时间标准由操作系统设定，Windows 默认使用 localtime，Mac OS 默认使用 UTC 而 UNIX 系列的操作系统两者都有。使用 Linux 时，最好将硬件时钟设置为 UTC 标准，并在所有操作系统中使用。这样 Linux 系统就可以自动调整夏令时设置，而如果使用 localtime 标准那么系统时间不会根据夏令时自动调整。
+
+-   通过如下命令检查当前设置
+
+```bash
+timedatectl status | grep local
+```
+
+-   硬件时间可以用 hwclock 命令设置，将硬件时间设置为 localtime（解决双系统时间问题）
+
+```bash
+timedatectl set-local-rtc true
+```
+
+-   硬件时间设置成 UTC（如果要恢复默认设置）：
+
+```bash
+timedatectl set-local-rtc false
+```
+
+
+
+#### Pacman 常见使用方法
+
+-   安装包
+
+```bash
+pacman -S 	Package_Name		# 安装软件
+pacman -Syu 						 		# 对整个系统进行更新
+pacman -Sy 	Package_Name		# 同步远程的仓库，并安装软件包
+pacman -Sv 	Package_Name		# 在显示一些操作信息后执行安装。
+pacman -U 	Package_Name		# 安装本地包,其扩展名为 pkg.tar.gz。
+```
+
+-   卸载包
+
+```bash
+pacman -R 	Package_Name		# 该命令将只删除包,不包含该包的依赖。
+pacman -Rs 	Package_Name		# 在删除包的同时,也将删除其依赖。
+pacman -Rd 	Package_Name		# 在删除包时不检查依赖。
+pacman -Rcn Package_Name		# 
+pacman -Rsn Package_Name 		# 加上-s参数来删除当前无用的依赖
+pacman -Sc 	Package_Name 		# 清理当前未被安装软件包的缓存(/var/cache/pacman/pkg):
+pacman -Scc Package_Name 		# 完全清理包缓存
+```
+
+-   搜索包
+
+```bash
+pacman -Ss 	Package_Name # 这将搜索含关键字的包。
+pacman -Qi 	Package_Name # 查看有关包的信息。
+pacman -Ql 	Package_Name # 列出该包的文件。
+pacman -Qo 	Package_Name # 通过查询数据库获知目前你的文件系统中某个文件是属于哪个软件包
+pacman -Qdt	Package_Name # 罗列所有不再作为依赖的软件包(孤立orphans)
+```
+
+-   其他用法
+
+```bash
+pacman -Sw Package_Name	# 只下载包,不安装。
+pacman -Sc  	# 清理位于/var/cache/pacman/pkg/目录未安装的包文件,。
+pacman -Scc 	# 清理所有的缓存文件。
+```
+
+-   `/etc/pacman.conf`配置文件
+
+    >   不希望升级某个软件包，跳过升级软件包，可以加入内容如下： 
+
+```bash
+IgnorePkg = 软件包名
+```
+
+>    跳过升级软件包组
+>   和软件包一样，你也可以象这样跳过升级某个软件包组：
+
+```bash
+IgnoreGroup = gnome
+```
+
+
+
+\# NOTE: You must run 'pacman-key --init' before first using pacman; the local
+
+\# keyring can then be populated with the keys of all official Arch Linux
+
+\# packagers with 'pacman-key --populate archlinux'.
 

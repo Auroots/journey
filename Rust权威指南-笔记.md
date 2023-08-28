@@ -1,6 +1,5 @@
 # Rust 权威指南 - 笔记
 
-[TOC]
 
 ## 第1章 入门
 
@@ -66,8 +65,8 @@ author = ["Your Name <you@example.com>"]
 [dependencies]
 ```
 
-- crate 	  ->    单元包
-- package  ->   包
+- `crate` 	  ->    单元包
+- `package`  ->   包
 
 **一个Hello World程序**
 
@@ -77,28 +76,28 @@ fn main() {
 }
 ```
 
-**文件 Cargo.lock **
+**文件 `Cargo.lock`**
 
 - 首次使用命令`cargo build` 的时候会在项目根目录下创建一个名为`Cargo.lock`的新文件;
 
 - 记录当前项目所有依赖库的具体版本号;
 
-**命令 cargo run**
+**命令 `cargo run`**
 
 - 构建项目并运行；
 - 构建产生的结果会被cargo存储到`target/debug`目录下；
 
-**命令 cargo check**
+**命令 `cargo check`**
 
 - 快速检测当前代码是否可以通过编译；
 
-**命令 cargo build --release**
+**命令 `cargo build --release`**
 
 - 在优化模式下构建并生成可执行文件；
 - 生成的可执行文件会被存储在`target/release`目录下；
 - 此模式会以更长的编译时间为代价来优化代码，使代码拥有更好的运行时性能；
 
-**命令 cargo run --release**
+**命令 `cargo run --release`**
 
 
 
@@ -136,7 +135,7 @@ let foo = 5;	// foo 是不可变的
 let mut bar = 5;// bar 是可变的
 ```
 
-- `Result`：枚举类型，枚举类型有一系列固定的值组合而成，拥有两个变体`OK`和`Err`，其中`Ok` 表示操作执行**成功**，`Err`表示操作执行**失败**；
+- `Result`：枚举类型，枚举类型有一系列固定的值组合而成，拥有两个变体`T`和`E`，当操作执行成功是返回`OK(T)`，当操作失败时返回的`Err(E)`；
 
 ### 生成一个随机数
 
@@ -154,7 +153,6 @@ fn main(){
     io::stdin().read_line(&mut guess).expect("Failed to read line!");
     
     println!("You guessed: {}", guess);
-
 }
 ```
 
@@ -1620,8 +1618,50 @@ fn main() {
         spend: 3,
     };
     println!("{:?}", s);
+    // {:?}打印简单的信息
+    // {:#?}打印比较易读的格式化后的信息
     //输出 Study { name: "从0到Go语言微服务架构师", target: "全面掌握Go语言微服务落地，代码级一次性解决微服务和分布式系统。", spend: 3 }
 }
+// --------------------------------------------------
+
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    length: u32,
+}
+
+impl Rectangle {
+    fn area(&self) -> u32 {
+        self.width * self.length
+    }
+    fn can_hold(&self, other: &Rectangle) -> bool {
+        self.width > other.width && self.length > other.length
+    }
+    fn quare(size: u32) -> Rectangle {
+        Rectangle {
+            width: size,
+            length: size,
+        }
+    }
+}
+
+fn main() {
+    let rect1 = Rectangle {
+        width: 20,
+        length: 30,
+    };
+    let rect2 = Rectangle {
+        width: 10,
+        length: 15,
+    };
+    let rect = Rectangle::area(&rect1);
+    let rect2 = Rectangle::can_hold(&rect1, &rect2);
+    let s = Rectangle::quare(20);
+    println!("rect: {:#?}", rect);
+    println!("rect2: {:#?}", rect2);
+    println!("{:#?}", s);
+}
+
 ```
 
 ##### 访问实例属性
@@ -1764,11 +1804,83 @@ let (study, spend) = pair;
 println!("pair contains {:?} and {:?}", study, spend);
 ```
 
+**解构结构体**
 
+```rust
+struct Study {
+    name: String,
+    target: String,
+    spend: u32,
+}
+fn main() {
+    let s = Study {
+        name: String::from("Rust"),
+        target: String::from("权威指南"),
+        spend: 3,
+    };
 
+    println!(
+        "name = {}, target = {},  spend = {} ",
+        s.name, s.target, s.spend
+    );
+    let s2 = Study {
+        name: String::from("Auroot"),
+        target: String::from("学习Rust"),
+        spend: 5,
+    };
+    let Study { name, .. } = s2;
+    println!("name = {}", name);
+}
 
+```
 
+**解构指针和引用**
 
+```rust
+fn main() {
+    // 获得一个 `i32` 类型的引用。`&` 表示取引用。
+    let num = &100;
+
+    match num {
+        // 用 `&val` 这个模式去匹配 `num`
+        &val => println!("&val 是: {:?}", val),
+    }
+
+    // 如果不想用 `&`，需要在匹配前解引用。
+    match *num {
+        val => println!("val 是: {:?}", val),
+    }
+
+    // Rust 对这种情况提供了 `ref`。它更改了赋值行为，从而可以对具体值创建引用。
+    // 下面这行将得到一个引用。
+    let ref num3 = 66;
+
+    // 相应地，定义两个非引用的变量，通过 `ref` 和 `ref mut` 仍可取得其引用。
+    let num4 = num3;
+    let mut mut_num4 = 7;
+
+    // 使用 `ref` 关键字来创建引用。
+    // 下面的 r 是 `&i32` 类型，它像 `i32` 一样可以直接打印，因此用法上
+    // 似乎看不出什么区别。但读者可以把 `println!` 中的 `r` 改成 `*r`，仍然能
+    // 正常运行。前面例子中的 `println!` 里就不能是 `*val`，因为不能对整数解
+    // 引用。
+    match num4 {
+        ref r => println!("num4 r is: {:?}", r),
+    }
+
+    // 类似地使用 `ref mut`。
+    match mut_num4 {
+        ref mut m => {
+            // 已经获得了 `mut_value` 的引用，先要解引用，才能改变它的值。
+            *m += 10;
+            println!("`mut_value`: {:?}", m);
+        }
+    }
+}
+```
+
+>- 解引用使用 *
+>- 解构使用 &、ref、和 ref mut
 
 ## 第6章 枚举与模式匹配
 
@@ -1805,7 +1917,47 @@ fn main() {
     let level = RoadMap::枚举与模式匹配;
     println!("level---{:?}", level);
 }
+
+
 ```
+
+
+
+```rust
+#[derive(Debug)]
+
+enum UsState {
+    Alabama,
+    Alaska,
+}
+
+enum Coin {
+    Penny,
+    Nickel,
+    Dime,
+    Quarter(UsState),
+}
+fn value_in_cents(coin: Coin) -> u8 {
+    match coin {
+        Coin::Penny => {
+            println!("Penny !");
+            1
+        }
+        Coin::Nickel => 5,
+        Coin::Dime => 10,
+        Coin::Quarter(state) => {
+            println!("State quarter from: {:#?} !", state);
+            25
+        }
+    }
+}
+fn main() {
+    let c = Coin::Quarter(UsState::Alaska);
+    println!("{}", value_in_cents(c));
+}
+```
+
+
 
 #### Option 枚举
 
@@ -1831,6 +1983,26 @@ fn main() {
  // let p = 6; //输出 None
     let result = get_discount(p);
     println!("{:?}", result)
+}
+
+```
+
+
+
+```rust
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        None => None,
+        Some(i) => Some(i + 1),
+    }
+}
+
+fn main() {
+    let five = Some(5);
+    let six = plus_one(five);
+    let none = plus_one(None);
+
+    println!("{:#?} {:#?} {:#?}", five, six, none);
 }
 ```
 
@@ -1904,19 +2076,106 @@ match level3 {
 
 
 
+#### if let
 
+在一些场合下，用 match 匹配枚举类型并不优雅。
+if let 在这样的场合要简洁得多，并且允许指明数种失败情形下的选项：
 
+```rust
+fn main() {
+    let v = Some(0u8);
+    match v {
+        Some(3) => println!("three"),
+        _ => (),
+    }
 
+    if let Some(3) = v {
+        println!(r#"three"#);
+    } else {
+        println!(r#"others"#);
+    }
+}
 
-
-
-
+```
 
 
 
 ## 第7章 使用包，单元包及模块来管理日渐复杂的项目
 
+> **模块系统**
+>
+> - Package(包): Cargo的特性, 让你构建, 测试, 共享 crate;
+> - Crate(单元包): 一个模块树, 他可产生一个library或可执行文件;
+> - Module(模块): use: 让你控制代码的组织, 作用于, 私有路径
+> - Path(路径): 为struct, function或module等项命名的方式;
 
+### Package和Crate
+
+**Crate**的类型:
+
+- binary
+- library
+
+**Crate Root**:
+
+- 是源代码文件
+- Rust编译器从这里开始, 组成你的Crate的根Module
+
+**Package**:
+
+- 包含一个Cargo.toml, 他描述了如何构建这些Crates
+- 只能包含0-1个library crate
+- 可以包含任意数量的binary crate
+- 但必须至少包含一个crate(binrary 或 binary)
+- Package可以同时包含src/main.rs和src/lib.rs
+  - 一个binary crate, 一个library crate
+  - 名称与package名相同
+- Package可以有多个binary crate
+  - 文件放在src/bin
+  - 每个文件是独立的binary crate
+
+**src/main.rs**
+
+- 是binray crate的crate root
+- crate名与package名相同
+
+**src/lib.rs**:
+
+- package包含一个library crate
+- 是library crate的crate root
+- crate名与package名相同
+
+> Cargo把crate root文件交给rustc来构建library或binray
+
+
+
+### Modules(模块)
+
+- 在一个crate内, 将代码进行分组
+- 增加可读性, 易于复用
+- 控制项目(item)的私有性: public, private
+
+**建立module**
+
+- mod关键字
+- 可嵌套
+- 可包含其他项(struct, enum, 常量, trait, 函数等)的定义
+
+```rust
+// src/lib.rs
+
+mod front_of_house {
+    mod hosting {
+        fn add_to_waitlist() {}
+        fn seat_at_table() {}
+    }
+    mod serving {
+        fn take_order() {}
+        fn serve_order() {}
+        fn take_patment() {}
+    }
+}
+```
 
 
 
@@ -2120,6 +2379,10 @@ for c in s10.chars(){
 
 
 ## 第9章 错误处理
+
+> 错误分为两大类：**可恢复****错误和不可恢复**错误，对于可恢复错误，比如文件未找到等，一般需要将他们报告给用户并再次尝试进行操作，而不可恢复错误往往就是bug的另一种说法，比如尝试访问超出数组结尾的位置等。
+
+可恢复错误的类型：`Result<T, E>`
 
 
 
@@ -2474,12 +2737,7 @@ fn main(){
 | 逻辑非 | !      | 如果表达式为真则返回 false 否则返回 true                 |
 
 
-
-## 个人学习总结
-
-
-
-
+# 未完待续...
 
 
 
